@@ -48,6 +48,46 @@ The decline from 0.45 → 0.23 across test groups is the intended outcome of the
 
 ---
 
+## How to Run
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/sanjeevveeramani/lulc-sentinel1-sar.git
+   cd lulc-sentinel1-sar
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Set up the required accounts (see "Required Accounts and API Keys" below) and update the Earth Engine project ID and `CKPT_DIR` path in each notebook to match your own account.
+4. Download the dataset and model weight from the links in "Deliverables" below, and place them where the notebooks expect them (paths are set at the top of each notebook).
+5. Run the notebooks in this order:
+   - `Training codes/01_data_collection.ipynb` → `01b` → `01d` → `01e` (data collection, in sequence)
+   - `Training codes/02_preprocessing_32cities_update.ipynb` (builds the final patch dataset)
+   - `Training codes/03a_model_training_main.ipynb` → `03b` → `03c` (model training; `03a` must finish before `03b`/`03c`)
+   - `Training codes/03d_graphs_and_evaluation.ipynb` → `03e_visualizations.ipynb` (evaluation and plots, no training)
+   - `Prototype code/04_prototype_webapp.ipynb` (the interactive prototype; only needs the trained model weight, not the full pipeline above)
+6. To just try the prototype without retraining anything, skip straight to step 5's last notebook, using the pre-trained model weight linked in "Deliverables".
+
+---
+
+## Requirements
+
+- Python 3.10+
+- All dependencies are listed in `requirements.txt`:
+  ```bash
+  pip install -r requirements.txt
+  ```
+- A GPU is recommended for training notebooks (`03a`–`03c`), but not required to run the prototype (`04`), which does a single lightweight inference pass per month.
+
+## Required Accounts and API Keys
+
+- **Google Earth Engine account**, registered to a Google Cloud project with the Earth Engine API enabled. This is required to run any notebook that pulls Sentinel-1 or Dynamic World data (`01`, `01b`, `01d`, `01e`, `02`, `04`). Sign up at https://earthengine.google.com, then replace the project ID in `ee.Initialize(project='lulc-sentinel1')` with your own.
+- **Google Drive access** (same Google account as above is simplest), used to store the dataset, checkpoints, and exported patches. No separate key is needed beyond normal Google sign-in, but file paths (`CKPT_DIR`, dataset folder) must be updated to match where you place these files in your own Drive.
+- No other third-party API keys are required; all other dependencies (PyTorch, segmentation-models-pytorch, torchgeo, Gradio, etc.) are open-source and installed via `requirements.txt`.
+
+---
+
 ## Repository Layout
 
 ```
@@ -62,7 +102,7 @@ Training codes/
   03b_step_b_standalone.ipynb                    Continued training, winning encoder
   03c_step_c_standalone.ipynb                    SegNet / FC-DenseNet baselines
   03d_graphs_and_evaluation.ipynb                Final evaluation + comparison graphs, real test set
-  03e_visualizations.ipynb                       Result plots only
+  03e_visualizations.ipynb                       Result plots only, no training, no GPU
 Prototype code/
   04_prototype_webapp.ipynb                      Interactive Gradio prototype + case study
 README.md
