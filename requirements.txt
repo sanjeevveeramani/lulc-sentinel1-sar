@@ -1,0 +1,11 @@
+earthengine-api
+rasterio
+segmentation-models-pytorch
+torchgeo
+torch
+numpy
+pandas
+matplotlib
+requests
+gradio
+plotly
